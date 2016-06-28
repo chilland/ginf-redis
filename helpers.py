@@ -1,13 +1,26 @@
+import re
 import json
 import numpy as np
 from collections import OrderedDict
 from datetime import datetime
 from math import radians, degrees, cos, sin, asin, sqrt, atan2
 
+def safeget(x, path, missingVal=''):
+    ''' Safely get a nested property '''
+    path = path.split('.')
+    for p in path[:-1]:
+        x = x.get(p, {})
+    
+    return x.get(path[-1], missingVal)
+
+
 def round_(x, n=5):
+    ''' Round w/ default place value '''
     return round(x, n)
 
+
 def midpoint(p1, p2):
+    ''' Midpoint of two points '''
     lat1, lon1 = map(radians, p1)
     lat2, lon2 = map(radians, p2)
     
@@ -23,7 +36,7 @@ def midpoint(p1, p2):
 
 
 def haversine(p1, p2):
-    ''' Appox distance between lat/lon '''
+    ''' Appox geographic distance between lat/lon '''
     lat1, lon1 = map(radians, p1)
     lat2, lon2 = map(radians, p2)
     
@@ -133,6 +146,7 @@ def spatial_stats(x):
         geo = np.array([[y['lat'], y['lon']] for y in x])
         return _spatial_stats(geo, haversine)
 
+
 def format_gnip(x):
     loc = safeget(x, 'geo.coordinates', None)
     if loc:
@@ -142,33 +156,11 @@ def format_gnip(x):
         if loc:
             loc = get_center(loc[0])
     
-    return (
-        re.sub('id:twitter.com:', '', safeget(x, 'actor.id')),
-        re.sub('tag:search.twitter.com,', '', safeget(x, 'id')),
-        safeget(x, 'postedTime'),
-        loc['lat'] if loc else None,
-        loc['lon'] if loc else None,
-        loc['mad'] if loc else None,
-        [i['id'] for i in safeget(x, 'twitter_entities.user_mentions', [])]
-    )
-
-
-# def format_(x):
-#     (id_, (pred, act)) = x
-#     return json.dumps(OrderedDict([
-#         ("id" , id_),
-
-#         ("act_lat"  , act['lat']),
-#         ("act_lon"  , act['lon']),
-#         ("act_mad"  , act['mad']),
-#         ("act_n"    , act['n']),
-#         ("act_iter" , act['iter']),
-
-#         ("pred_lat"  , pred['lat']),
-#         ("pred_lon"  , pred['lon']),
-#         ("pred_mad"  , pred['mad']),
-#         ("pred_n"    , pred['n']),
-#         ("pred_iter" , pred['iter']),
-        
-#         ("err" , haversine([act['lat'], act['lon']], [pred['lat'], pred['lon']]))
-#     ]))
+    return {
+        "source" : re.sub('id:twitter.com:', '', safeget(x, 'actor.id')),
+        "date" : safeget(x, 'postedTime'),
+        "lat" : float(loc['lat']) if loc else None,
+        "lon" : float(loc['lon']) if loc else None,
+        "targets" : [i['id'] for i in safeget(x, 'twitter_entities.user_mentions', [])],
+        "has_geo" : loc['lat'] != None
+    }
