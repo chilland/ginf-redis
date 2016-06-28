@@ -98,16 +98,16 @@ def _spatial_stats(X, f, eps=1e-3, max_iter=1000):
     ])
 
 
-# def get_center(box):
-#     # *** This is reversed compared to geopoint ***
-#     lat = sum([float(b[1]) for b in box]) / len(box)
-#     lon = sum([float(b[0]) for b in box]) / len(box)
-#     mad = haversine([lat, lon], box[0])
-#     return {
-#         "mad" : round_(mad),
-#         "lat" : round_(lat),
-#         "lon" : round_(lon),
-#     }
+def get_center(box):
+    # *** This is reversed compared to geopoint ***
+    lat = sum([float(b[1]) for b in box]) / len(box)
+    lon = sum([float(b[0]) for b in box]) / len(box)
+    mad = haversine([lat, lon], box[0])
+    return {
+        "mad" : round_(mad),
+        "lat" : round_(lat),
+        "lon" : round_(lon),
+    }
 
 
 def spatial_stats(x):
@@ -132,6 +132,25 @@ def spatial_stats(x):
     else:
         geo = np.array([[y['lat'], y['lon']] for y in x])
         return _spatial_stats(geo, haversine)
+
+def format_gnip(x):
+    loc = safeget(x, 'geo.coordinates', None)
+    if loc:
+        loc = {'lat' : loc[0], 'lon' : loc[1], 'mad' : 0}
+    else:
+        loc = safeget(x, 'location.geo.coordinates', None)
+        if loc:
+            loc = get_center(loc[0])
+    
+    return (
+        re.sub('id:twitter.com:', '', safeget(x, 'actor.id')),
+        re.sub('tag:search.twitter.com,', '', safeget(x, 'id')),
+        safeget(x, 'postedTime'),
+        loc['lat'] if loc else None,
+        loc['lon'] if loc else None,
+        loc['mad'] if loc else None,
+        [i['id'] for i in safeget(x, 'twitter_entities.user_mentions', [])]
+    )
 
 
 # def format_(x):

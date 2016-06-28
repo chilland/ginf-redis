@@ -95,15 +95,15 @@ class GinfAPI:
             '%s:was-mentioned:%s' % (self.prefix, user)
         )
     
-    def filter_neib_locs(neib_locs, min_count=3, max_mad=30, max_speed=1000):
+    def filter_neib_locs(self, neib_locs, min_count=3, max_mad=30, max_speed=1000):
         tmp = []
         for neib_loc in neib_locs:
-            high_posts = neib_loc['n'] > min_count # User has more than N posts (or N neighbors)
-            low_mad = neib_loc['mad'] < max_mad # MAD of neighbors is less than M
-            low_speed = neib_loc['max_speed'] < max_speed
+            high_posts = neib_loc['n'] >= min_count # User has more than N posts (or N neighbors)
+            low_mad = neib_loc['mad'] <= max_mad # MAD of neighbors is less than M
+            # low_speed = neib_loc['max_speed'] < max_speed
             if high_posts and low_mad:
                 tmp.append(neib_loc)
-            
+        
         return tmp
     
     def predict_user_loc(self, user):
