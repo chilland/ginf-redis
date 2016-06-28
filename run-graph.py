@@ -5,9 +5,9 @@ from ginf import GinfGraph
 
 def load_obj(obj):
     '''
-        Wrapper for formatting data
+        Wrapper for reading data
     '''
-    source, _1, date, lat, lon, _2, targets = json.loads(obj)[1]
+    source, _1, date, lat, lon, _2, targets = json.loads(obj)#[1]
     try:
         return {
             "source"  : int(source),
@@ -22,5 +22,10 @@ def load_obj(obj):
 
 if __name__ == "__main__":
     graph_api = GinfGraph()
-    for obj in sys.stdin:
+    for i,obj in enumerate(sys.stdin):
         graph_api.update(load_obj(obj))
+        
+        if not i % 1000:
+            print >> sys.stderr, '%d records completed' % i
+    
+    graph_api.execute(force=True)

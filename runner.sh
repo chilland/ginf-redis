@@ -1,3 +1,15 @@
 #!/bin/bash
 
-cat data/2014-12-21.json | head -n 100000 | parallel --pipe -N 10000 -P 8 "python runner.py"
+DATA=data/part-00000
+
+# Compute actual locations
+redis-cli flushall
+cat $DATA | parallel -u --pipe -N 100000 -P 6 "python run-graph.py"
+cat $DATA | python run-predict.py > act
+
+# Compute predicted locations
+redis-cli flushall
+cat $DATA | parallel -u --pipe -N 100000 -P 6 "python run-graph.py"
+cat $DATA | python run-predict.py --always-predict > pred
+
+python munge-results.py
