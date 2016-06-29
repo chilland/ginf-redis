@@ -8,7 +8,7 @@ pred_path = sys.argv[2]
 out_path = sys.argv[3]
 
 print '-- loading actual locations --'
-act = map(eval, open(act_path))
+act = map(json.loads, open(act_path))
 act = pd.DataFrame(act)
 act.columns = ['act_' + c for c in act.columns]
 act = act.drop_duplicates().reset_index(drop=True)

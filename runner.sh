@@ -25,12 +25,17 @@ DATA=data/
 
 # Compute actual locations
 redis-cli flushall
-cat data/run1-100.gz | gzip -cd | parallel -u --pipe -N 100000 -P 10 "python run-graph.py"
-cat data/run1-100.gz | gzip -cd | python run-predict.py > output/act
+time cat data/run1-100.gz | gzip -cd | parallel -u --pipe -N 100000 -P 10 "python run-graph.py"
+time cat data/run1-100.gz | gzip -cd | python run-predict.py > output/act
 
 # Compute predicted locations
 redis-cli flushall
-cat $DATA | parallel -u --pipe -N 100000 -P 6 "python run-graph.py"
-cat $DATA | python run-predict.py --always-predict > output/pred-n3-mad30-speedinf
+time cat data/run1-100.gz | gzip -cd | parallel -u --pipe -N 100000 -P 10 "python run-graph.py"
+
+# real    6m25.123s
+# user    58m3.244s
+# sys     2m48.380s
+
+time cat data/run1-100.gz | gzip -cd | python run-predict.py --always-predict > output/pred
 
 python munge-results.py
