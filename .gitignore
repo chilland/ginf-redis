@@ -1,6 +1,6 @@
-data/*
 *pyc
-output/*
 *rdb
+output/*
+data/*
 apis/docker/ginf-graph/ginf/*
-aprs/docker/ginf-predict/ginf/*
+apis/docker/ginf-predict/ginf/*
