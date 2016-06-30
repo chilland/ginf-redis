@@ -161,6 +161,6 @@ def format_gnip(x):
         "date" : safeget(x, 'postedTime'),
         "lat" : float(loc['lat']) if loc else None,
         "lon" : float(loc['lon']) if loc else None,
-        "targets" : [i['id'] for i in safeget(x, 'twitter_entities.user_mentions', [])],
-        "has_geo" : loc['lat'] != None
+        "targets" : [str(i['id']) for i in safeget(x, 'twitter_entities.user_mentions', [])],
+        "has_geo" : loc != None
     }

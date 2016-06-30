@@ -49,9 +49,10 @@ class GinfGraph:
             self.add_dirty(obj['source'], 'actual')
             
         for target in obj['targets']:
-            self.add_mentions(obj['source'], target)
-            self.add_dirty(target, 'predicted')
-        
+            if target != obj['source']:
+                self.add_mentions(obj['source'], target)
+                self.add_dirty(target, 'predicted')
+            
         self.execute()
     
     def execute(self, force=False):
