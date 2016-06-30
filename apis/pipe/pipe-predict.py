@@ -3,6 +3,7 @@ import sys
 import argparse
 import ultrajson as json
 
+sys.path.append('../../')
 from ginf import GinfAPI
 from helpers import safeget
 
