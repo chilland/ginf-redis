@@ -8,17 +8,20 @@ The geoinference analytic has two components
 
 #### Quickstart 
 	
+    # Start redis locally
+    redis-server
+    
 	# Start graph service
 	cd $PROJECT_ROOT/apis/docker/ginf-graph
 	./copy-src.sh
 	docker build -t ginf-graph .
-	docker run -p 5000:5000 ginf-graph
+	docker run -t -i -p 5000:5000 ginf-graph
 
 	# Start predict service
 	cd $PROJECT_ROOT/apis/docker/ginf-predict
 	./copy-src.sh
 	docker build -t ginf-predict .
-	docker run -p 6000:6000 ginf-predict
+	docker run -t -i -p 6000:6000 ginf-predict
 
 	# Test
 	cd $PROJECT_ROOT/apis/docker/tests
@@ -33,7 +36,7 @@ The geoinference analytic has two components
     #   ]
     # }
     
-	./test_api.sh
+	./test_predict.sh
     # {
     #   "mode": "actual", 
     #   "model": "ginf-predict-01", 

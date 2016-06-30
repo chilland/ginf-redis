@@ -23,6 +23,7 @@ logging.basicConfig(format='%(levelname)s %(asctime)s %(filename)s %(lineno)d: %
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Generic classifier')
     parser._optionals.title = 'Options'

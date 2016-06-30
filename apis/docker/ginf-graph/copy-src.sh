@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cp -r ../../../ginf
+cp -r ../../../ginf ./
