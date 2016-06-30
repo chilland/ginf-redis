@@ -16,11 +16,11 @@ class GinfGraph:
     buffer_length = 250
     prefix = "ginf"
     
-    def __init__(self, n_decimals=3, pipeline=True):
+    def __init__(self, redis_host, redis_port, redis_db, n_decimals=3, pipeline=True):
         self.n_decimals = n_decimals
         self.pipeline = pipeline
         
-        r = redis.Redis(host='localhost', port=6379, db=0)
+        r = redis.Redis(redis_host, redis_port, redis_db)
         if pipeline:
             self.con = r.pipeline()
         else:
@@ -54,6 +54,13 @@ class GinfGraph:
                 self.add_dirty(target, 'predicted')
             
         self.execute()
+        return {
+            "post-locations" : '%s:post-locations:%s' % (self.prefix, obj['source']),
+            "did-mention" : '%s:did-mention:%s' % (self.prefix, obj['source']),
+            "was-mentioned" : [
+                '%s:was-mentioned:%s' % (self.prefix, t) for t in obj['targets'] if t != obj['source']
+            ]
+        }
     
     def execute(self, force=False):
         if force:
@@ -68,8 +75,8 @@ class GinfAPI:
     buffer_length = 250
     prefix = "ginf"
     
-    def __init__(self):
-        self.con = redis.Redis(host='localhost', port=6379, db=0)
+    def __init__(self, redis_host, redis_port, redis_db):
+        self.con = redis.Redis(redis_host, redis_port, redis_db)
     
     # Helpers
     def _deformat_location(self, k):

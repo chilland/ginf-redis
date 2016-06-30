@@ -1,0 +1,4 @@
+Flask==0.10.1
+Flask-RESTful==0.3.5
+tornado==4.1
+redis==2.10.5

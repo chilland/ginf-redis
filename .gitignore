@@ -2,3 +2,5 @@ data/*
 *pyc
 output/*
 *rdb
+apis/docker/ginf-graph/ginf/*
+aprs/docker/ginf-predict/ginf/*
