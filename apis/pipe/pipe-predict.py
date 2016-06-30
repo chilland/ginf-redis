@@ -7,6 +7,7 @@ sys.path.append('../../ginf')
 from ginf import GinfAPI
 from helpers import safeget
 
+
 def get_params():
     parser = argparse.ArgumentParser(description='predict location')
     parser.add_argument("--always-predict", action='store_true')
@@ -16,14 +17,14 @@ def get_params():
     parser.add_argument("--redis-db", type=int, default=0)
     return parser.parse_args()
 
+
 if __name__ == "__main__":
     args = get_params()
     ginf_api = GinfAPI(args.redis_host, args.redis_post, args.redis_db)
     
     for i,line in enumerate(sys.stdin):
         try:
-            obj = json.loads(line)
-            source = re.sub('id:twitter.com:', '', safeget(obj, 'actor.id'))
+            source = re.sub('id:twitter.com:', '', safeget(json.loads(line), 'actor.id'))
             
             loc, mode = ginf_api.get_user_loc(source, always_predict=args.always_predict, always_dirty=args.always_dirty)
             
