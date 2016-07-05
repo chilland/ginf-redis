@@ -19,3 +19,8 @@ time cat data/run1-100.gz | gzip -cd | $PCOM "python pipe-graph.py"
 # sys     2m53.220s
 
 time cat data/run1-100.gz | gzip -cd | python pipe-predict.py --always-predict > output/pred
+
+# Predictions in parallel
+rm output/pred.par
+time cat ../../data/run1-100.gz | gzip -cd | $PCOM "python run-graph.py"
+time cat ../../data/run1-100.gz | gzip -cd | $PCOM "python run-predict.py --always-predict" >> output/pred.par

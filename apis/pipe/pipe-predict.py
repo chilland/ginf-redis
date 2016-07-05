@@ -20,7 +20,7 @@ def get_params():
 
 if __name__ == "__main__":
     args = get_params()
-    ginf_api = GinfAPI(args.redis_host, args.redis_post, args.redis_db)
+    ginf_api = GinfAPI(args.redis_host, args.redis_port, args.redis_db)
     
     for i,line in enumerate(sys.stdin):
         try:

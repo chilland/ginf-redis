@@ -1,4 +1,5 @@
 import sys
+import argparse
 import ultrajson as json
 
 sys.path.append('../../ginf')
@@ -16,7 +17,7 @@ def get_params():
 
 if __name__ == "__main__":
     args = get_params()
-    graph_api = GinfGraph(args.redis_host, args.redis_post, args.redis_db)
+    graph_api = GinfGraph(args.redis_host, args.redis_port, args.redis_db)
     for i,line in enumerate(sys.stdin):
         
         # Error handling for bad records in GNIP data
