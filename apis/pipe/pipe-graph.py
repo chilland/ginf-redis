@@ -2,9 +2,8 @@ import sys
 import argparse
 import ultrajson as json
 
-sys.path.append('../../ginf')
 from ginf import GinfGraph
-from helpers import format_gnip
+from ginf.helpers import format_gnip
 
 
 def get_params():

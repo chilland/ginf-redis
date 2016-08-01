@@ -1,3 +1,6 @@
+build/*
+dist/*
+ginf.egg-info/*
 *pyc
 *rdb
 output/*

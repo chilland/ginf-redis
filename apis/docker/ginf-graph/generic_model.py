@@ -1,9 +1,5 @@
-import sys
-import json
-
-sys.path.append('/src/ginf')
 from ginf import GinfGraph
-from helpers import format_gnip
+from ginf.helpers import format_gnip
 
 class apiModel:
     model_name = "ginf-graph-01"

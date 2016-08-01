@@ -3,9 +3,8 @@ import sys
 import argparse
 import ultrajson as json
 
-sys.path.append('../../ginf')
 from ginf import GinfAPI
-from helpers import safeget
+from ginf.helpers import safeget
 
 
 def get_params():

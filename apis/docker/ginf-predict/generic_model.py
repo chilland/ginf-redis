@@ -1,10 +1,6 @@
 import re
-import sys
-import json
-
-sys.path.append('/src/ginf')
 from ginf import GinfAPI
-from helpers import safeget
+from ginf.helpers import safeget
 
 class apiModel:
     model_name = "ginf-predict-01"
