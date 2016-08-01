@@ -25,7 +25,7 @@ def get_redis_connection(redis_service, default_port):
     nodes = redis_service.split(',')
     if len(nodes) == 1:
         r_host, r_port = get_host_port(redis_service, default_port=default_port)
-        r = Redis(r_host, r_port, redis_db=0)
+        r = Redis(r_host, r_port, db=0)
         print "Single-node Redis connection established."
     else:
         startup_nodes = []
