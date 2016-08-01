@@ -1,5 +1,6 @@
 import sys
-import redis
+from redis import Redis
+from rediscluster import RedisCluster
 
 from helpers import spatial_stats
 
@@ -9,6 +10,34 @@ from helpers import spatial_stats
 def strdict2floatdict(x):
     return dict([(k, float(v)) for k,v in x.iteritems()])
 
+
+def get_host_port(connect, default_port=80):
+    hostport = connect.split(':')
+    if len(hostport) == 2:
+        port = int(hostport[1])
+    else:
+        port = default_port
+    
+    return hostport[0], port
+
+
+def get_redis_connection(redis_service, default_port):
+    nodes = redis_service.split(',')
+    if len(nodes) == 1:
+        r_host, r_port = get_host_port(redis_service, default_port=default_port)
+        r = Redis(r_host, r_port, redis_db=0)
+        print "Single-node Redis connection established."
+    else:
+        startup_nodes = []
+        for node in nodes:
+            r_host, r_port = node.split(':')
+            startup_nodes.append({'host' : r_host, 'port' : r_port})
+        
+        r = RedisCluster(startup_nodes=startup_nodes, decode_responses=True)
+        print "Multi-node Redis connection established."
+    
+    return r
+
 # --
 
 class GinfGraph:
@@ -16,15 +45,12 @@ class GinfGraph:
     buffer_length = 250
     prefix = "ginf"
     
-    def __init__(self, redis_host, redis_port, redis_db, n_decimals=3, pipeline=True):
+    def __init__(self, redis_service, default_port=6379, n_decimals=3, pipeline=True):
         self.n_decimals = n_decimals
         self.pipeline = pipeline
         
-        r = redis.Redis(redis_host, redis_port, redis_db)
-        if pipeline:
-            self.con = r.pipeline()
-        else:
-            self.con = r
+        r = get_redis_connection(redis_service, default_port=default_port)
+        self.con = r.pipeline() if pipeline else r
     
     def _format_location(self, lat, lon):
         lat = round(float(lat), self.n_decimals)
@@ -75,8 +101,8 @@ class GinfAPI:
     buffer_length = 250
     prefix = "ginf"
     
-    def __init__(self, redis_host, redis_port, redis_db):
-        self.con = redis.Redis(redis_host, redis_port, redis_db)
+    def __init__(self, redis_service, default_port=6379):
+        self.con = get_redis_connection(redis_service, default_port=default_port)
     
     # Helpers
     def _deformat_location(self, k):

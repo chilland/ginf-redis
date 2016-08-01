@@ -9,15 +9,13 @@ from helpers import format_gnip
 
 def get_params():
     parser = argparse.ArgumentParser(description='store graph')
-    parser.add_argument("--redis-host", type=str, default='localhost')
-    parser.add_argument("--redis-port", type=int, default=6379)
-    parser.add_argument("--redis-db", type=int, default=0)
+    parser.add_argument("--redis-service", type=str, default='localhost:6379')
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = get_params()
-    graph_api = GinfGraph(args.redis_host, args.redis_port, args.redis_db)
+    graph_api = GinfGraph(args.redis_service)
     for i,line in enumerate(sys.stdin):
         
         # Error handling for bad records in GNIP data
