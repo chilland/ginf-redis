@@ -25,7 +25,7 @@ def get_redis_connection(redis_service, default_port):
     nodes = redis_service.split(',')
     if len(nodes) == 1:
         r_host, r_port = get_host_port(redis_service, default_port=default_port)
-        r = Redis(r_host, r_port, db=0)
+        r = StrictRedis(r_host, r_port, db=0)
         print "Single-node Redis connection established."
     else:
         startup_nodes = []
@@ -33,7 +33,7 @@ def get_redis_connection(redis_service, default_port):
             r_host, r_port = node.split(':')
             startup_nodes.append({'host' : r_host, 'port' : r_port})
         
-        r = RedisCluster(startup_nodes=startup_nodes, decode_responses=True)
+        r = StrictRedisCluster(startup_nodes=startup_nodes, decode_responses=True)
         print "Multi-node Redis connection established."
     
     return r
