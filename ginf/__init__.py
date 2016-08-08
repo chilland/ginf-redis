@@ -1,1 +1,1 @@
-from ginf import GinfAPI, GinfGraph
+from .ginf import GinfAPI, GinfGraph
