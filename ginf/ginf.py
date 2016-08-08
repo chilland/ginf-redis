@@ -1,6 +1,6 @@
 import sys
-from redis import Redis
-from rediscluster import RedisCluster
+from redis import StrictRedis
+from rediscluster import StrictRedisCluster
 
 from helpers import spatial_stats
 
