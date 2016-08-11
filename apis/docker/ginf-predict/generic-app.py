@@ -25,15 +25,12 @@ logger.setLevel(logging.INFO)
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='Generic classifier')
-    parser._optionals.title = 'Options'
-    parser.add_argument('-p', '--port', help='Specify port for API to listen on.',  type=str, required=False, default=5000)
-    
+    parser = argparse.ArgumentParser(description="ginf-predict")
+    parser._optionals.title = "Options"
+    parser.add_argument("-p", "--port", help="Specify port for API to listen on.",  type=str, required=False, default=5000)
+    parser.add_argument("--redis-service", type=str, default="localhost:6379")
     parser.add_argument("--always-predict", action="store_true")
     parser.add_argument("--always-dirty", action="store_true")
-    parser.add_argument("--redis-host", type=str, default='localhost')
-    parser.add_argument("--redis-port", type=int, default=6379)
-    parser.add_argument("--redis-db", type=int, default=0)
     return parser.parse_args()
 
 
@@ -75,9 +72,7 @@ if __name__ == '__main__':
     model = apiModel(**{
         'always_predict' : start_args.always_predict,
         'always_dirty' : start_args.always_dirty,
-        'redis_host' : start_args.redis_host,
-        'redis_port' : start_args.redis_port,
-        'redis_db'   : start_args.redis_db
+        'redis_service' : start_args.redis_service,
     })
     logger.info('Done loading model.')
     
