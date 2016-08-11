@@ -52,6 +52,11 @@ def landspeed(p1, p2, time1, time2, eps = 60):
     return abs(3600 * haversine(p1, p2) / (time2 - time1 + eps))
 
 
+def mad2confidence(mad):
+    conf = 1. / (1 + np.log10(1 + mad))
+    return round_(conf)
+
+
 # def filter_landspeed(x, max_speed=1000):
 #     ''' Filter users that move more than max_speek km per hour '''
 #     posts = sorted(list(x[1]), key = lambda x: x['date'])
@@ -101,13 +106,15 @@ def _spatial_stats(X, f, eps=1e-3, max_iter=1000):
             break
                 
         y = y1
-        
+    
+    mad = np.median(D)
     return OrderedDict([
-        ("mad"  , round_(np.median(D))),
-        ("lat"  , round_(out[0])),
-        ("lon"  , round_(out[1])),
-        ("n"    , len(X)),
-        ("iter" , iter_),
+        ("mad"        , round_(mad)),
+        ("confidence" , mad2confidence(mad)),
+        ("lat"        , round_(out[0])),
+        ("lon"        , round_(out[1])),
+        ("n"          , len(X)),
+        ("iter"       , iter_),
     ])
 
 
@@ -126,21 +133,25 @@ def get_center(box):
 def spatial_stats(x):
     if len(x) == 1:
         x = list(x)
+        mad = 0.0
         return OrderedDict([
-            ("mad"  , 0.0),
-            ("lat"  , round_(x[0]["lat"])),
-            ("lon"  , round_(x[0]["lon"])),
-            ("n"    , 1),
-            ("iter" , 0),
+            ("mad"        , mad),
+            ("confidence" , mad2confidence(mad)),
+            ("lat"        , round_(x[0]["lat"])),
+            ("lon"        , round_(x[0]["lon"])),
+            ("n"          , 1),
+            ("iter"       , 0),
         ])
     elif len(x) == 2:
         mp = midpoint(*[[y['lat'], y['lon']] for y in x])
+        mad = haversine(mp, [y['lat'], y['lon']])
         return OrderedDict([
-            ("mad"  , round_(haversine(mp, [y['lat'], y['lon']]))),
-            ("lat"  , round_(mp[0])),
-            ("lon"  , round_(mp[1])),
-            ("n"    , 2),
-            ("iter" , 0),
+            ("mad"        , round_(mad)),
+            ("confidence" , mad2confidence(mad)),
+            ("lat"        , round_(mp[0])),
+            ("lon"        , round_(mp[1])),
+            ("n"          , 2),
+            ("iter"       , 0),
         ])
     else:
         geo = np.array([[y['lat'], y['lon']] for y in x])
