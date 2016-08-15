@@ -178,6 +178,11 @@ class GinfAPI:
             loc = strdict2floatdict(loc)
             self.con.hmset('%s:user-locations:%s:%s' % (self.prefix, mode, user), loc)
             self.con.srem('%s:dirty:%s' % (self.prefix, mode), user)
+            
+            # Error estimates are only for predictions
+            if mode != 'predicted':
+                loc['error_estimate_km'] = None
+            
             return loc, mode
         else:
             return None, None

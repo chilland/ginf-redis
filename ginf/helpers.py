@@ -27,9 +27,7 @@ def midpoint(p1, p2):
     bx = cos(lat2) * cos(lon2 - lon1)
     by = cos(lat2) * sin(lon2 - lon1)
     
-    lat3 = atan2(sin(lat1) + sin(lat2), \
-           sqrt((cos(lat1) + bx) * (cos(lat1) \
-           + bx) + by**2))
+    lat3 = atan2(sin(lat1) + sin(lat2), sqrt((cos(lat1) + bx) * (cos(lat1) + bx) + by**2))
     lon3 = lon1 + atan2(by, cos(lat1) + bx)
     
     return map(degrees, [lat3, lon3])
@@ -52,30 +50,39 @@ def landspeed(p1, p2, time1, time2, eps = 60):
     return abs(3600 * haversine(p1, p2) / (time2 - time1 + eps))
 
 
-def mad2confidence(mad):
-    conf = 1. / (1 + np.log10(1 + mad))
-    return round_(conf)
+def get_center(box):
+    # *** This is reversed compared to geopoint ***
+    lat = sum([float(b[1]) for b in box]) / len(box)
+    lon = sum([float(b[0]) for b in box]) / len(box)
+    mad = haversine([lat, lon], box[0])
+    return {
+        "mad" : round_(mad),
+        "lat" : round_(lat),
+        "lon" : round_(lon),
+    }
 
 
-# def filter_landspeed(x, max_speed=1000):
-#     ''' Filter users that move more than max_speek km per hour '''
-#     posts = sorted(list(x[1]), key = lambda x: x['date'])
-#     i = 1
-#     while i < len(posts):
-#         p1 = (posts[i-1]['lat'], posts[i-1]['lon'])
-#         p2 = (posts[i]['lat'], posts[i]['lon'])
-#         if landspeed(p1, p2, posts[i-1]['date'], posts[i]['date']) > max_speed:
-#             return False
-        
-#         i += 1
-    
-#     return True
+def error_estimate_km(x):
+    if x <= 0:
+        return round_(8.82526)
+    else:
+        return round_(0.03588 + (0.98183 * np.log10(x)))
 
 
 def _spatial_stats(X, f, eps=1e-3, max_iter=1000):
     '''
-        Copied from SO
-        ** Does not support weighted points ** 
+        Compute spatial median
+        Copied from SO.
+        
+        returns {
+            "mad" : ... median absolute deviation (kms) ...
+            "lat" : lat of spatial median
+            "lon" : lon of spatian median
+            "n" : number of observations used to compute spatial median
+            "iter" : iterations run by spatial median alg.
+            "error_estimate_km" : error estimate (for _neighbor_ predictions only)
+        }
+        
     '''
     iter_ = 0
     y = np.mean(X, 0)
@@ -109,49 +116,36 @@ def _spatial_stats(X, f, eps=1e-3, max_iter=1000):
     
     mad = np.median(D)
     return OrderedDict([
-        ("mad"        , round_(mad)),
-        ("confidence" , mad2confidence(mad)),
-        ("lat"        , round_(out[0])),
-        ("lon"        , round_(out[1])),
-        ("n"          , len(X)),
-        ("iter"       , iter_),
+        ("mad"               , round_(mad)),
+        ("lat"               , round_(out[0])),
+        ("lon"               , round_(out[1])),
+        ("n"                 , len(X)),
+        ("iter"              , iter_),
+        ("error_estimate_km" , error_estimate_km(mad))
     ])
-
-
-def get_center(box):
-    # *** This is reversed compared to geopoint ***
-    lat = sum([float(b[1]) for b in box]) / len(box)
-    lon = sum([float(b[0]) for b in box]) / len(box)
-    mad = haversine([lat, lon], box[0])
-    return {
-        "mad" : round_(mad),
-        "lat" : round_(lat),
-        "lon" : round_(lon),
-    }
 
 
 def spatial_stats(x):
     if len(x) == 1:
         x = list(x)
-        mad = 0.0
         return OrderedDict([
-            ("mad"        , mad),
-            ("confidence" , mad2confidence(mad)),
-            ("lat"        , round_(x[0]["lat"])),
-            ("lon"        , round_(x[0]["lon"])),
-            ("n"          , 1),
-            ("iter"       , 0),
+            ("mad"               , 0),
+            ("lat"               , round_(x[0]["lat"])),
+            ("lon"               , round_(x[0]["lon"])),
+            ("n"                 , 1),
+            ("iter"              , 0),
+            ("error_estimate_km" , error_estimate_km(0))
         ])
     elif len(x) == 2:
         mp = midpoint(*[[y['lat'], y['lon']] for y in x])
         mad = haversine(mp, [y['lat'], y['lon']])
         return OrderedDict([
-            ("mad"        , round_(mad)),
-            ("confidence" , mad2confidence(mad)),
-            ("lat"        , round_(mp[0])),
-            ("lon"        , round_(mp[1])),
-            ("n"          , 2),
-            ("iter"       , 0),
+            ("mad"               , round_(mad)),
+            ("lat"               , round_(mp[0])),
+            ("lon"               , round_(mp[1])),
+            ("n"                 , 2),
+            ("iter"              , 0),
+            ("error_estimate_km" , error_estimate_km(mad))
         ])
     else:
         geo = np.array([[y['lat'], y['lon']] for y in x])
@@ -175,3 +169,20 @@ def format_gnip(x):
         "targets" : [str(i['id']) for i in safeget(x, 'twitter_entities.user_mentions', [])],
         "has_geo" : loc != None
     }
+
+# --
+# More code
+
+# def filter_landspeed(x, max_speed=1000):
+#     ''' Filter users that move more than max_speek km per hour '''
+#     posts = sorted(list(x[1]), key = lambda x: x['date'])
+#     i = 1
+#     while i < len(posts):
+#         p1 = (posts[i-1]['lat'], posts[i-1]['lon'])
+#         p2 = (posts[i]['lat'], posts[i]['lon'])
+#         if landspeed(p1, p2, posts[i-1]['date'], posts[i]['date']) > max_speed:
+#             return False
+        
+#         i += 1
+    
+#     return True
