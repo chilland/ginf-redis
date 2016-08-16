@@ -10,9 +10,9 @@ class apiModel:
         self.always_dirty = always_dirty
     
     def predict_api(self, obj):
-        source = '%s_%s' % (str(obj.get('source', 'twitter')), str(obj['user']))
+        user = ginf.io.namespace_id(obj['source'], obj['user'])
 
-        loc, mode = self.ginf_api.get_user_loc(source, 
+        loc, mode = self.ginf_api.get_user_loc(user, 
             always_predict=self.always_predict, 
             always_dirty=self.always_dirty)
         

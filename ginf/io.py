@@ -9,6 +9,8 @@ def safeget(x, path, missingVal=''):
     
     return x.get(path[-1], missingVal)
 
+def namespace_id(source, user):
+    return '%s_%s' % (str(source), str(user))
 
 def gnip(x):
     loc = safeget(x, 'geo.coordinates', None)
@@ -31,7 +33,7 @@ def gnip(x):
 
 def kafka(x):
     return {
-        'source' : '%s_%s' % (str(x['source']), str(x['user'])),
+        'source' : namespace_id(x['source'], x['user']),
         'date' : x['date'],
         'lat' : x['lat'],
         'lon' : x['lon'],
