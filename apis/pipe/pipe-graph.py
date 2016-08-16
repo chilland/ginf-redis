@@ -2,9 +2,7 @@ import sys
 import argparse
 import ultrajson as json
 
-from ginf import GinfGraph
-from ginf.helpers import format_gnip
-
+import ginf
 
 def get_params():
     parser = argparse.ArgumentParser(description='store graph')
@@ -14,7 +12,7 @@ def get_params():
 
 if __name__ == "__main__":
     args = get_params()
-    graph_api = GinfGraph(args.redis_service)
+    graph_api = ginf.GinfGraph(args.redis_service)
     for i,line in enumerate(sys.stdin):
         
         # Error handling for bad records in GNIP data
@@ -24,7 +22,7 @@ if __name__ == "__main__":
             continue
         
         try:
-            obj = format_gnip(json.loads(line))
+            obj = ginf.io.gnip(json.loads(line))
             graph_api.update(obj)
         except KeyboardInterrupt:
             raise

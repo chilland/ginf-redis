@@ -1,23 +1,11 @@
-import re
-import json
 import numpy as np
 from collections import OrderedDict
 from datetime import datetime
 from math import radians, degrees, cos, sin, asin, sqrt, atan2
 
-def safeget(x, path, missingVal=''):
-    ''' Safely get a nested property '''
-    path = path.split('.')
-    for p in path[:-1]:
-        x = x.get(p, {})
-    
-    return x.get(path[-1], missingVal)
-
-
 def round_(x, n=5):
     ''' Round w/ default place value '''
     return round(x, n)
-
 
 def midpoint(p1, p2):
     ''' Midpoint of two points '''
@@ -56,9 +44,9 @@ def get_center(box):
     lon = sum([float(b[0]) for b in box]) / len(box)
     mad = haversine([lat, lon], box[0])
     return {
-        "mad" : round_(mad),
-        "lat" : round_(lat),
-        "lon" : round_(lon),
+        'mad' : round_(mad),
+        'lat' : round_(lat),
+        'lon' : round_(lon),
     }
 
 
@@ -152,23 +140,7 @@ def spatial_stats(x):
         return _spatial_stats(geo, haversine)
 
 
-def format_gnip(x):
-    loc = safeget(x, 'geo.coordinates', None)
-    if loc:
-        loc = {'lat' : loc[0], 'lon' : loc[1], 'mad' : 0}
-    else:
-        loc = safeget(x, 'location.geo.coordinates', None)
-        if loc:
-            loc = get_center(loc[0])
-    
-    return {
-        "source" : re.sub('id:twitter.com:', '', safeget(x, 'actor.id')),
-        "date" : safeget(x, 'postedTime'),
-        "lat" : float(loc['lat']) if loc else None,
-        "lon" : float(loc['lon']) if loc else None,
-        "targets" : [str(i['id']) for i in safeget(x, 'twitter_entities.user_mentions', [])],
-        "has_geo" : loc != None
-    }
+
 
 # --
 # More code
