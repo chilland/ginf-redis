@@ -66,7 +66,7 @@ def error_estimate_km(x):
     if x <= 0:
         return round_(8.82526)
     else:
-        return round_(0.03588 + (0.98183 * np.log10(x)))
+        return round_(10 ** (0.03588 + (0.98183 * np.log10(x))))
 
 
 def _spatial_stats(X, f, eps=1e-3, max_iter=1000):
