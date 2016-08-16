@@ -40,12 +40,12 @@ The geoinference analytic has two components
     # {
     #   "mode": "actual", 
     #   "model": "ginf-predict-01", 
-    #   "value": {
-    #     "iter": 1.0, 
+    #   "value": { 
     #     "lat": -23.683, 
     #     "lon": -46.596, 
     #     "mad": 0.0, 
-    #     "n": 153.0
+    #     "n": 153.0,
+    #     "error_estimate_km" : 1.0
     #   }
     # }
 
