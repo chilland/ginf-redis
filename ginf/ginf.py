@@ -45,7 +45,7 @@ class GinfGraph:
     buffer_length = 250
     prefix = "ginf"
     
-    def __init__(self, redis_service, default_port=6379, n_decimals=3, pipeline=False):
+    def __init__(self, redis_service, default_port=6379, n_decimals=3, pipeline=True):
         self.n_decimals = n_decimals
         self.pipeline = pipeline
         
