@@ -6,7 +6,7 @@ def safeget(x, path, missingVal=''):
     path = path.split('.')
     for p in path[:-1]:
         x = x.get(p, {})
-    
+
     return x.get(path[-1], missingVal)
 
 def namespace_id(source, user):
@@ -20,7 +20,7 @@ def gnip(x):
         loc = safeget(x, 'location.geo.coordinates', None)
         if loc:
             loc = get_center(loc[0])
-    
+
     return {
         'source' : re.sub('id:twitter.com:', '', safeget(x, 'actor.id')),
         'date' : safeget(x, 'postedTime'),
@@ -38,7 +38,7 @@ def kafka(x):
         'lat' : x['lat'],
         'lon' : x['lon'],
         'targets' : [
-            '%s_%s' % (str(x['source']), str(target['id'])) for target in x['targets']
+            '%s_%s' % (str(x['source']), str(target['id'])) for target in x.get('targets', [])
         ],
         'has_geo' : (x['lat'] != None) & (x['lon'] != None)
     }
