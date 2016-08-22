@@ -89,7 +89,7 @@ class GinfGraph:
         }
     
     def execute(self, force=False):
-        if force or not self.pipeline:
+        if force:
             self.con.execute()
             self.con.reset()            
         elif self.pipeline & (len(self.con) > self.buffer_length):
