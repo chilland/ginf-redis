@@ -37,12 +37,8 @@ class ClassifierAPI(Resource):
 
     def post(self):
         json_data = request.get_json()
-        try:
-            res = model.predict_api(json_data)
-            return make_response(jsonify(res), 200)
-        except Exception as e:
-            logger.info(e)
-            return {}
+        res = model.predict_api(json_data)
+        return make_response(jsonify(res), 200)
 
 
 class HealthCheck(Resource):
