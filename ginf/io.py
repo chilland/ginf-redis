@@ -32,13 +32,12 @@ def gnip(x):
 
 
 def kafka(x):
+    targets = x['targets'] if x.get('targets') else []
     return {
         'source' : namespace_id(x['source'], x['user']),
         'date' : x['date'],
         'lat' : x['lat'],
         'lon' : x['lon'],
-        'targets' : [
-            '%s_%s' % (str(x['source']), str(target['id'])) for target in x.get('targets', [])
-        ],
+        'targets' : map(lambda t: namespace_id(x['source'], t['id']), targets),
         'has_geo' : (x['lat'] != None) & (x['lon'] != None)
     }
